@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "74191846865",
+    "project_id": "preservar-212bc",
+    "storage_bucket": "preservar-212bc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:74191846865:android:84699782036fb81065b4f0",
+        "android_client_info": {
+          "package_name": "com.example.preservacao"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCL-9O7xv4bhiTt-kTn7BxpZNoSDMws7Oc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

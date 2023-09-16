@@ -14,8 +14,14 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Random;
 
@@ -23,24 +29,36 @@ public class Cadastro extends AppCompatActivity {
 
     Button cad;
     TextView tx_map;
+    ImageView ativar_camera;
+    Bitmap image;
+    EditText usuario, profissao, senha;
 
-    Bitmap bitmap;
-    ImageView imageView;
+    Preservador  preservador = new Preservador();
+    DatabaseReference databaseReference;
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cadastro);
+        usuario = findViewById(R.id.edt_usuarioname);
+        profissao = findViewById(R.id.edt_prf);
+        senha = findViewById(R.id.edt_senha_cd);
+
+        FirebaseApp.initializeApp(this);
+
+        databaseReference = FirebaseDatabase.getInstance().getReference("preservador");
 
         cad = findViewById(R.id.btn_pess);
         tx_map = findViewById(R.id.text_map);
+        ativar_camera= findViewById(R.id.edt_camera);
 
-        imageView = findViewById(R.id.edt_camera);
-        if (ActivityCompat.checkSelfPermission(Cadastro.this, android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
+        if (ActivityCompat.checkSelfPermission(Cadastro.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
 
-            ActivityCompat.requestPermissions(Cadastro.this, new String[] {Manifest.permission.CAMERA},0);
+            ActivityCompat.requestPermissions(Cadastro.this, new String[] {Manifest.permission.CAMERA}, 0);
+
 
         }
+
         tx_map.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -55,16 +73,43 @@ public class Cadastro extends AppCompatActivity {
         cad.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(usuario.getText().toString().trim().isEmpty()){
+                    usuario.setError("Campo Vazio");
+                }else if(profissao.getText().toString().trim().isEmpty()){
+                    profissao.setError("Campo Vazio");
+
+                }else if (senha.getText().toString().trim().isEmpty()){
+                    senha.setError("Campo Vazio");
+
+                }else{
+
+
+
+
+                preservador.setUsuario(usuario.getText().toString());
+                preservador.setProfissao(profissao.getText().toString());
+                preservador.setSenha(senha.getText().toString());
+
+                DatabaseReference reference = databaseReference.push();
+                preservador.setIdPreservador(reference.getKey());
+                databaseReference.child(preservador.getIdPreservador()).setValue(preservador);
+
                 NotificationCompat.Builder builder =
                         alerta.builder
                                 ("Preservar é vida"
                                         ,"Sua conta foi criada ");
                 alerta.getManager().notify(new Random().nextInt(), builder.build());
+
+                }
+
             }
         });
-        imageView.setOnClickListener(new View.OnClickListener() {
+
+
+        ativar_camera.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View v) {
                 Ligar();
             }
         });
@@ -82,11 +127,14 @@ public class Cadastro extends AppCompatActivity {
         if (requestCode == 1 && resultCode == Cadastro.RESULT_OK ){
 
             Bundle extras = data.getExtras();
-            bitmap = (Bitmap) extras.get("data");
-            imageView.setImageBitmap(bitmap);
+            image = (Bitmap) extras.get("data");
+            ativar_camera.setImageBitmap(image);
 
         }
 
-        super.onActivityResult(requestCode, resultCode,data);
-}
+        super.onActivityResult(requestCode, resultCode , data);
+    }
+
+
+
 }
